@@ -18,8 +18,6 @@ mongoose.connect(process.env.MONGODB)
     console.error('Error connecting to MongoDB:', err);
 });
 
-// Middleware and routes (optional, add as needed)
-
 const app = express();
 
 // allow express to parse incoming json data
@@ -30,6 +28,17 @@ app.listen(3000, () => {
     console.log('Server is running on port 3000');
 });
 
-
+// routes
 app.use('/api/user', userRoutes);
 app.use('/api/auth', authRoutes);
+
+// middleware to handle errors
+app.use((err, req, res, next) => {
+    const statusCode = res.statusCode || 500;
+    const message = err.message || 'Internal Server Error';
+    res.status(statusCode).json({
+        success: false,
+        statusCode,
+        message,
+    })
+});
